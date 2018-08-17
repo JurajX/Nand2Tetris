@@ -1,0 +1,257 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 512 rows (indexed 0..511, top to bottom)
+ * of 256 pixels each (indexed 0..255, left to right). The top left pixel on
+ * the screen is indexed (0,0).
+ */
+class Screen {
+    static Array bitArray, screen;
+    static boolean color;
+
+
+    /** Initializes the Screen. */
+    function void init() {
+        let screen = 16384;
+        let color = true;
+        let bitArray = Array.new(16);
+        let bitArray[0] = 1;
+        let bitArray[1] = 2;
+        let bitArray[2] = 4;
+        let bitArray[3] = 8;
+        let bitArray[4] = 16;
+        let bitArray[5] = 32;
+        let bitArray[6] = 64;
+        let bitArray[7] = 128;
+        let bitArray[8] = 256;
+        let bitArray[9] = 512;
+        let bitArray[10] = 1024;
+        let bitArray[11] = 2048;
+        let bitArray[12] = 4096;
+        let bitArray[13] = 8192;
+        let bitArray[14] = 16384;
+        let bitArray[15] = 32767 + 1; // tokeniser checks for values greater than 32767
+        return;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+        var int i;
+        while (i < 8192) {
+            let screen[i] = false;
+            let i = i + 1;
+        }
+        return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+        let color = b;
+        return;
+    }
+
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+        var int xDiv16, xMod16, address;
+        if ( (x < 0) | (x > 511) |
+             (y < 0) | (y > 255) ) {
+            do Sys.error(7);
+        }
+        let xDiv16 = x / 16;
+        let xMod16 = x - (xDiv16*16);
+        let address = (y*32) + xDiv16;
+        do Screen.updateLocation(address, bitArray[xMod16]);
+        return;
+    }
+
+    /** Updates screen address by the given mask. */
+    function void updateLocation(int address, int mask) {
+        if ( (address < 0) | (address > 8192) ) {
+            do Sys.error(1);
+        }
+        if (color) {
+            let screen[address] = screen[address] | mask;
+        }
+        else {
+            let screen[address] = screen[address] & (~mask);
+        }
+        return;
+    }
+
+    /** Draw horizontal line from x1 to x2 at y, using the current color. */
+    function void drawHline(int x1, int x2, int y) {
+        var int temp, x1Div16, x1Mod16, address, mask;
+        if ( (x1 < 0) | (x1 > 511) |
+             (x2 < 0) | (x2 > 511) |
+             (y  < 0) | (y  > 255) ) {
+            do Sys.error(7);
+        }
+        if (x1 > x2) {
+            let temp = x1;
+            let x1 = x2;
+            let x2 = temp;
+        }
+        let x1Div16 = x1 / 16;
+        let x1Mod16 = x1 - (x1Div16*16);
+        let address = y*32 + x1Div16;
+        while ( ~(x2 < x1 ) ) {
+            while ( ~(x2 < x1 ) & (x1Mod16 < 16) ) {
+                let mask = mask + bitArray[x1Mod16];
+                let x1Mod16 = x1Mod16 + 1;
+                let x1 = x1 + 1;
+            }
+            do Screen.updateLocation(address, mask);
+            let x1Mod16 = 0;
+            let mask = 0;
+            let address = address + 1;
+        }
+        return;
+    }
+
+
+    /** Draw vertical line from y1 to y2 at x, using the current color. */
+    function void drawVline(int x, int y1, int y2) {
+        var int temp, xDiv16, address, mask;
+        if ( (x  < 0) | (x  > 511) |
+             (y1 < 0) | (y1 > 255) |
+             (y2 < 0) | (y2 > 255) ) {
+            do Sys.error(7);
+        }
+        if (y1 > y2) {
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+        }
+        let xDiv16 = x / 16;
+        let mask = bitArray[x - (xDiv16*16)];
+        let address = y1*32 + xDiv16;
+
+        while ( ~(y2 < y1 ) ) {
+            do Screen.updateLocation(address, mask);
+            let y1 = y1 + 1;
+            let address = address + 32;
+        }
+        return;
+    }
+
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        var int dx, dy, a, b, temp, diff;
+        if ( (x1 < 0) | (x1 > 511) |
+             (x2 < 0) | (x2 > 511) |
+             (y1 < 0) | (y1 > 255) |
+             (y2 < 0) | (y2 > 255) ) {
+            do Sys.error(7);
+        }
+        if (y1 = y2) {
+            do Screen.drawHline(x1, x2, y1);
+            return;
+        }
+        if (x1 = x2) {
+            do Screen.drawVline(x1, y1, y2);
+            return;
+        }
+        if (x1 > x2) {
+            let temp = x1;
+            let x1 = x2;
+            let x2 = temp;
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+        }
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        if (y1 < y2) {
+            while ( ~(a > dx) & ~(b > dy) ) {
+                do Screen.drawPixel(x1 + a, y1 + b);
+                if (diff < 0) {
+                    let a = a + 1;
+                    let diff = diff + dy;
+                }
+                else {
+                    let b = b + 1;
+                    let diff = diff - dx;
+                }
+            }
+        }
+        else {
+            while ( ~(a > dx) & ~(b < dy) ) {
+                do Screen.drawPixel(x1 + a, y1 + b);
+                if (diff > 0) {
+                    let a = a + 1;
+                    let diff = diff + dy;
+                }
+                else {
+                    let b = b - 1;
+                    let diff = diff + dx;
+                }
+            }
+        }
+        return;
+    }
+
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int i, x1Div16, x1Mod16, address0, address, mask;
+        if ( (x1 < 0) | (x1 > 511) |
+             (x2 < 0) | (x2 > 511) |
+             (y1 < 0) | (y1 > 255) |
+             (y2 < 0) | (y2 > 255) ) {
+            do Sys.error(7);
+        }
+        if ( (x1 > x2) | (y1 > y2) ) {
+            do Sys.error(8);
+        }
+        let x1Div16 = x1 / 16;
+        let x1Mod16 = x1 - (x1Div16*16);
+        let address0 = y1*32 + x1Div16;
+        while ( ~(x2 < x1 ) ) {
+            while ( ~(x2 < x1 ) & (x1Mod16 < 16) ) {
+                let mask = mask + bitArray[x1Mod16];
+                let x1Mod16 = x1Mod16 + 1;
+                let x1 = x1 + 1;
+            }
+            let address = address0;
+            let i = y1;
+            while ( ~(i > y2) ) {
+                do Screen.updateLocation(address, mask);
+                let address = address + 32;
+                let i = i + 1;
+            }
+            let x1Mod16 = 0;
+            let mask = 0;
+            let address0 = address0 + 1;
+        }
+        return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+        var int dx, dy, r2;
+        if ( (x < 0) | (x > 511) |
+             (y < 0) | (y > 255) ) {
+            do Sys.error(7);
+        }
+        if (r > 181) {
+            do Sys.error(7);
+        }
+        let r2 = r*r;
+        while ( ~(dy > dx) ) {
+            let dx = Math.sqrt( r2 - (dy*dy) );
+            do Screen.drawHline( x-dx, x+dx, y+dy);
+            do Screen.drawHline( x-dx, x+dx, y-dy);
+            do Screen.drawHline( x-dy, x+dy, y+dx);
+            do Screen.drawHline( x-dy, x+dy, y-dx);
+            let dy = dy + 1;
+        }
+        return;
+    }
+}

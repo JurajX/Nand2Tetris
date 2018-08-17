@@ -1,0 +1,924 @@
+function Screen.init 0
+push constant 16384
+pop static 1
+push constant 1
+neg
+pop static 2
+push constant 16
+call Array.new 1
+pop static 0
+push static 0
+push constant 0
+add
+push constant 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 1
+add
+push constant 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 2
+add
+push constant 4
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 3
+add
+push constant 8
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 4
+add
+push constant 16
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 5
+add
+push constant 32
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 6
+add
+push constant 64
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 7
+add
+push constant 128
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 8
+add
+push constant 256
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 9
+add
+push constant 512
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 10
+add
+push constant 1024
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 11
+add
+push constant 2048
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 12
+add
+push constant 4096
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 13
+add
+push constant 8192
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 14
+add
+push constant 16384
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 0
+push constant 15
+add
+push constant 32767
+push constant 1
+add
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+return
+function Screen.clearScreen 1
+label WHILE_EXP0
+push local 0
+push constant 8192
+lt
+not
+if-goto WHILE_END0
+push static 1
+push local 0
+add
+push constant 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Screen.setColor 0
+push argument 0
+pop static 2
+push constant 0
+return
+function Screen.drawPixel 3
+push argument 0
+push constant 0
+lt
+push argument 0
+push constant 511
+gt
+or
+push argument 1
+push constant 0
+lt
+or
+push argument 1
+push constant 255
+gt
+or
+not
+if-goto IF_ELSE1
+push constant 7
+call Sys.error 1
+pop temp 0
+goto IF_END1
+label IF_ELSE1
+label IF_END1
+push argument 0
+push constant 16
+call Math.divide 2
+pop local 0
+push argument 0
+push local 0
+push constant 16
+call Math.multiply 2
+sub
+pop local 1
+push argument 1
+push constant 32
+call Math.multiply 2
+push local 0
+add
+pop local 2
+push local 2
+push static 0
+push local 1
+add
+pop pointer 1
+push that 0
+call Screen.updateLocation 2
+pop temp 0
+push constant 0
+return
+function Screen.updateLocation 0
+push argument 0
+push constant 0
+lt
+push argument 0
+push constant 8192
+gt
+or
+not
+if-goto IF_ELSE2
+push constant 1
+call Sys.error 1
+pop temp 0
+goto IF_END2
+label IF_ELSE2
+label IF_END2
+push static 2
+not
+if-goto IF_ELSE3
+push static 1
+push argument 0
+add
+push static 1
+push argument 0
+add
+pop pointer 1
+push that 0
+push argument 1
+or
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+goto IF_END3
+label IF_ELSE3
+push static 1
+push argument 0
+add
+push static 1
+push argument 0
+add
+pop pointer 1
+push that 0
+push argument 1
+not
+and
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+label IF_END3
+push constant 0
+return
+function Screen.drawHline 5
+push argument 0
+push constant 0
+lt
+push argument 0
+push constant 511
+gt
+or
+push argument 1
+push constant 0
+lt
+or
+push argument 1
+push constant 511
+gt
+or
+push argument 2
+push constant 0
+lt
+or
+push argument 2
+push constant 255
+gt
+or
+not
+if-goto IF_ELSE4
+push constant 7
+call Sys.error 1
+pop temp 0
+goto IF_END4
+label IF_ELSE4
+label IF_END4
+push argument 0
+push argument 1
+gt
+not
+if-goto IF_ELSE5
+push argument 0
+pop local 0
+push argument 1
+pop argument 0
+push local 0
+pop argument 1
+goto IF_END5
+label IF_ELSE5
+label IF_END5
+push argument 0
+push constant 16
+call Math.divide 2
+pop local 1
+push argument 0
+push local 1
+push constant 16
+call Math.multiply 2
+sub
+pop local 2
+push argument 2
+push constant 32
+call Math.multiply 2
+push local 1
+add
+pop local 3
+label WHILE_EXP6
+push argument 1
+push argument 0
+lt
+not
+not
+if-goto WHILE_END6
+label WHILE_EXP7
+push argument 1
+push argument 0
+lt
+not
+push local 2
+push constant 16
+lt
+and
+not
+if-goto WHILE_END7
+push local 4
+push static 0
+push local 2
+add
+pop pointer 1
+push that 0
+add
+pop local 4
+push local 2
+push constant 1
+add
+pop local 2
+push argument 0
+push constant 1
+add
+pop argument 0
+goto WHILE_EXP7
+label WHILE_END7
+push local 3
+push local 4
+call Screen.updateLocation 2
+pop temp 0
+push constant 0
+pop local 2
+push constant 0
+pop local 4
+push local 3
+push constant 1
+add
+pop local 3
+goto WHILE_EXP6
+label WHILE_END6
+push constant 0
+return
+function Screen.drawVline 4
+push argument 0
+push constant 0
+lt
+push argument 0
+push constant 511
+gt
+or
+push argument 1
+push constant 0
+lt
+or
+push argument 1
+push constant 255
+gt
+or
+push argument 2
+push constant 0
+lt
+or
+push argument 2
+push constant 255
+gt
+or
+not
+if-goto IF_ELSE8
+push constant 7
+call Sys.error 1
+pop temp 0
+goto IF_END8
+label IF_ELSE8
+label IF_END8
+push argument 1
+push argument 2
+gt
+not
+if-goto IF_ELSE9
+push argument 1
+pop local 0
+push argument 2
+pop argument 1
+push local 0
+pop argument 2
+goto IF_END9
+label IF_ELSE9
+label IF_END9
+push argument 0
+push constant 16
+call Math.divide 2
+pop local 1
+push static 0
+push argument 0
+push local 1
+push constant 16
+call Math.multiply 2
+sub
+add
+pop pointer 1
+push that 0
+pop local 3
+push argument 1
+push constant 32
+call Math.multiply 2
+push local 1
+add
+pop local 2
+label WHILE_EXP10
+push argument 2
+push argument 1
+lt
+not
+not
+if-goto WHILE_END10
+push local 2
+push local 3
+call Screen.updateLocation 2
+pop temp 0
+push argument 1
+push constant 1
+add
+pop argument 1
+push local 2
+push constant 32
+add
+pop local 2
+goto WHILE_EXP10
+label WHILE_END10
+push constant 0
+return
+function Screen.drawLine 6
+push argument 0
+push constant 0
+lt
+push argument 0
+push constant 511
+gt
+or
+push argument 2
+push constant 0
+lt
+or
+push argument 2
+push constant 511
+gt
+or
+push argument 1
+push constant 0
+lt
+or
+push argument 1
+push constant 255
+gt
+or
+push argument 3
+push constant 0
+lt
+or
+push argument 3
+push constant 255
+gt
+or
+not
+if-goto IF_ELSE11
+push constant 7
+call Sys.error 1
+pop temp 0
+goto IF_END11
+label IF_ELSE11
+label IF_END11
+push argument 1
+push argument 3
+eq
+not
+if-goto IF_ELSE12
+push argument 0
+push argument 2
+push argument 1
+call Screen.drawHline 3
+pop temp 0
+push constant 0
+return
+goto IF_END12
+label IF_ELSE12
+label IF_END12
+push argument 0
+push argument 2
+eq
+not
+if-goto IF_ELSE13
+push argument 0
+push argument 1
+push argument 3
+call Screen.drawVline 3
+pop temp 0
+push constant 0
+return
+goto IF_END13
+label IF_ELSE13
+label IF_END13
+push argument 0
+push argument 2
+gt
+not
+if-goto IF_ELSE14
+push argument 0
+pop local 4
+push argument 2
+pop argument 0
+push local 4
+pop argument 2
+push argument 1
+pop local 4
+push argument 3
+pop argument 1
+push local 4
+pop argument 3
+goto IF_END14
+label IF_ELSE14
+label IF_END14
+push argument 2
+push argument 0
+sub
+pop local 0
+push argument 3
+push argument 1
+sub
+pop local 1
+push argument 1
+push argument 3
+lt
+not
+if-goto IF_ELSE15
+label WHILE_EXP16
+push local 2
+push local 0
+gt
+not
+push local 3
+push local 1
+gt
+not
+and
+not
+if-goto WHILE_END16
+push argument 0
+push local 2
+add
+push argument 1
+push local 3
+add
+call Screen.drawPixel 2
+pop temp 0
+push local 5
+push constant 0
+lt
+not
+if-goto IF_ELSE17
+push local 2
+push constant 1
+add
+pop local 2
+push local 5
+push local 1
+add
+pop local 5
+goto IF_END17
+label IF_ELSE17
+push local 3
+push constant 1
+add
+pop local 3
+push local 5
+push local 0
+sub
+pop local 5
+label IF_END17
+goto WHILE_EXP16
+label WHILE_END16
+goto IF_END15
+label IF_ELSE15
+label WHILE_EXP18
+push local 2
+push local 0
+gt
+not
+push local 3
+push local 1
+lt
+not
+and
+not
+if-goto WHILE_END18
+push argument 0
+push local 2
+add
+push argument 1
+push local 3
+add
+call Screen.drawPixel 2
+pop temp 0
+push local 5
+push constant 0
+gt
+not
+if-goto IF_ELSE19
+push local 2
+push constant 1
+add
+pop local 2
+push local 5
+push local 1
+add
+pop local 5
+goto IF_END19
+label IF_ELSE19
+push local 3
+push constant 1
+sub
+pop local 3
+push local 5
+push local 0
+add
+pop local 5
+label IF_END19
+goto WHILE_EXP18
+label WHILE_END18
+label IF_END15
+push constant 0
+return
+function Screen.drawRectangle 6
+push argument 0
+push constant 0
+lt
+push argument 0
+push constant 511
+gt
+or
+push argument 2
+push constant 0
+lt
+or
+push argument 2
+push constant 511
+gt
+or
+push argument 1
+push constant 0
+lt
+or
+push argument 1
+push constant 255
+gt
+or
+push argument 3
+push constant 0
+lt
+or
+push argument 3
+push constant 255
+gt
+or
+not
+if-goto IF_ELSE20
+push constant 7
+call Sys.error 1
+pop temp 0
+goto IF_END20
+label IF_ELSE20
+label IF_END20
+push argument 0
+push argument 2
+gt
+push argument 1
+push argument 3
+gt
+or
+not
+if-goto IF_ELSE21
+push constant 8
+call Sys.error 1
+pop temp 0
+goto IF_END21
+label IF_ELSE21
+label IF_END21
+push argument 0
+push constant 16
+call Math.divide 2
+pop local 1
+push argument 0
+push local 1
+push constant 16
+call Math.multiply 2
+sub
+pop local 2
+push argument 1
+push constant 32
+call Math.multiply 2
+push local 1
+add
+pop local 3
+label WHILE_EXP22
+push argument 2
+push argument 0
+lt
+not
+not
+if-goto WHILE_END22
+label WHILE_EXP23
+push argument 2
+push argument 0
+lt
+not
+push local 2
+push constant 16
+lt
+and
+not
+if-goto WHILE_END23
+push local 5
+push static 0
+push local 2
+add
+pop pointer 1
+push that 0
+add
+pop local 5
+push local 2
+push constant 1
+add
+pop local 2
+push argument 0
+push constant 1
+add
+pop argument 0
+goto WHILE_EXP23
+label WHILE_END23
+push local 3
+pop local 4
+push argument 1
+pop local 0
+label WHILE_EXP24
+push local 0
+push argument 3
+gt
+not
+not
+if-goto WHILE_END24
+push local 4
+push local 5
+call Screen.updateLocation 2
+pop temp 0
+push local 4
+push constant 32
+add
+pop local 4
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP24
+label WHILE_END24
+push constant 0
+pop local 2
+push constant 0
+pop local 5
+push local 3
+push constant 1
+add
+pop local 3
+goto WHILE_EXP22
+label WHILE_END22
+push constant 0
+return
+function Screen.drawCircle 3
+push argument 0
+push constant 0
+lt
+push argument 0
+push constant 511
+gt
+or
+push argument 1
+push constant 0
+lt
+or
+push argument 1
+push constant 255
+gt
+or
+not
+if-goto IF_ELSE25
+push constant 7
+call Sys.error 1
+pop temp 0
+goto IF_END25
+label IF_ELSE25
+label IF_END25
+push argument 2
+push constant 181
+gt
+not
+if-goto IF_ELSE26
+push constant 7
+call Sys.error 1
+pop temp 0
+goto IF_END26
+label IF_ELSE26
+label IF_END26
+push argument 2
+push argument 2
+call Math.multiply 2
+pop local 2
+label WHILE_EXP27
+push local 1
+push local 0
+gt
+not
+not
+if-goto WHILE_END27
+push local 2
+push local 1
+push local 1
+call Math.multiply 2
+sub
+call Math.sqrt 1
+pop local 0
+push argument 0
+push local 0
+sub
+push argument 0
+push local 0
+add
+push argument 1
+push local 1
+add
+call Screen.drawHline 3
+pop temp 0
+push argument 0
+push local 0
+sub
+push argument 0
+push local 0
+add
+push argument 1
+push local 1
+sub
+call Screen.drawHline 3
+pop temp 0
+push argument 0
+push local 1
+sub
+push argument 0
+push local 1
+add
+push argument 1
+push local 0
+add
+call Screen.drawHline 3
+pop temp 0
+push argument 0
+push local 1
+sub
+push argument 0
+push local 1
+add
+push argument 1
+push local 0
+sub
+call Screen.drawHline 3
+pop temp 0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP27
+label WHILE_END27
+push constant 0
+return

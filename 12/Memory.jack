@@ -1,0 +1,112 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */
+class Memory {
+    static int heapBase, heapSize;
+    static int idxL, idxN, idxAloc;
+    static Array memory, freeList;
+
+    /** Initializes the class. */
+    function void init() {
+        // 0-th element for absolute size, 1-st element for idxN free chunk of memory.
+        // Allocated chunks hold only their size in the -1 address.
+        let heapBase = 2048;
+        let heapSize = 14336;
+        let idxL = 0;
+        let idxN = 1;
+        let idxAloc = -1;
+        let memory = 0;
+        let freeList = heapBase;
+        let freeList[idxL] = heapSize;
+        let freeList[idxN] = null;
+        return;
+    }
+
+    /** Returns the RAM value at the given address. */
+    function int peek(int address) {
+        return memory[address];
+    }
+
+    /** Sets the RAM value at the given address to the given value. */
+    function void poke(int address, int value) {
+        let memory[address] = value;
+        return;
+    }
+
+    /** Looks for a best fitting block for the given size by starting
+     *  at the freeList and iterating over free blocks until the idxN
+     *  free block is null. If for the iterated blockSize holds
+     *  size <= blockSize < bestSize set the block as the bestBlock.
+     *  The function does not handle out-of-memory error.
+     */
+    function Array bestFit(int size){
+        var int curSize, bestSize;
+        var Array cur, prev, best, prevBest;
+        if (freeList = null) {
+            return null;
+        }
+        if (freeList[idxN] = null) {
+            let best = freeList;
+            let freeList = null;
+            return best;
+        }
+        let bestSize = heapSize;
+        let cur = freeList;
+        let curSize = freeList[idxL];
+        while ( ~( ( bestSize = (size + 1) ) | (cur = null) ) ) {
+            if ( (curSize > size) & (curSize < bestSize) ) {
+                let prevBest = prev;
+                let best = cur;
+                let bestSize = curSize;
+            }
+            let prev = cur;
+            let cur = cur[idxN];
+            let curSize = cur[idxL];
+        }
+        if (prevBest = null) {
+            let freeList = best[idxN];
+        }
+        else {
+          let prevBest[idxN] = best[idxN];
+        }
+        return best;
+    }
+
+    /** Finds an available RAM block of the given size and returns
+     *  a reference to its base address. */
+    function int alloc(int size) {
+        var Array best, leftover, ret;
+        let best = Memory.bestFit(size);
+        if (best = null) {
+            do Sys.error(5);
+        }
+        if ( best[idxL] > (size + 2) ) {
+            let leftover = best;
+            let leftover[idxL] = leftover[idxL] - (size + 1);
+            let ret = best + leftover[idxL] + 1;
+            let ret[idxAloc] = size + 1;
+            let leftover[idxN] = freeList;
+            let freeList = leftover;
+        }
+        else{
+            let ret = best + 1;
+        }
+      return ret;
+    }
+
+    /** De-allocates the given object (cast as an array) by making
+     *  it available for future allocations. */
+    function void deAlloc(Array object) {
+        let object = object - 1;
+        let object[idxN] = freeList;
+        let freeList = object;
+        return;
+    }
+}
